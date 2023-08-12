@@ -1,5 +1,6 @@
 <?php
 
+
 class URLWatcher
 {
     private $fetchPageFunction;
@@ -24,16 +25,31 @@ class URLWatcher
 
 $fetchPageFunction = function (...$urlSegments): void {
     $allowedFiles = [
-        'fetchpage' => '../src/App.linker.php'
+        '',
+        'home'
     ];
-
+    $absoluteUIPath = '../src/App.linker.php';
     $requestedFileKey = $urlSegments[0] ?? '';
-    if (!isset($allowedFiles[$requestedFileKey])) {
+
+    if (!is_string($requestedFileKey) || !in_array($requestedFileKey, $allowedFiles, true)) {
         die('Invalid file requested');
     }
 
-    require_once $allowedFiles[$requestedFileKey];
-    fetchLink(...$urlSegments);
+    $absoluteUIPath = realpath($absoluteUIPath);
+    if ($absoluteUIPath === false) {
+        die('Invalid file path');
+    }
+
+    if (!is_file($absoluteUIPath) || !is_readable($absoluteUIPath)) {
+        die('Access denied');
+    }
+
+    try {
+        require_once $absoluteUIPath;
+        fetchLink(...$urlSegments);
+    } catch (Throwable $e) {
+        die('An error occurred');
+    }
 };
 
 $URLWatcher = new URLWatcher($fetchPageFunction);
