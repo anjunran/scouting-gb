@@ -1,9 +1,12 @@
-<?php
-
-
 class URLWatcher
 {
     private $fetchPageFunction;
+    private $errorMessages = [
+        'invalid_domain' => 'Sorry, the destination of your link isn\'t associated with this domain.',
+        'invalid_filepath' => 'Invalid file path',
+        'access_denied' => 'Access denied',
+        'generic_error' => "An issue has been detected. It's crucial to adhere to the directive provided above to proceed."
+    ];
 
     public function __construct(callable $fetchPageFunction)
     {
@@ -21,34 +24,40 @@ class URLWatcher
 
         call_user_func_array($this->fetchPageFunction, $urlSegments);
     }
+
+    public function getErrorMessage($key): string
+    {
+        return $this->errorMessages[$key] ?? 'Unknown error';
+    }
 }
 
-$fetchPageFunction = function (...$urlSegments): void {
+$fetchPageFunction = function (...$urlSegments) use ($URLWatcher): void {
     $allowedFiles = [
         '',
-        'home'
+        'home',
+        'dashboard'
     ];
     $absoluteUIPath = '../src/App.linker.php';
     $requestedFileKey = $urlSegments[0] ?? '';
 
     if (!is_string($requestedFileKey) || !in_array($requestedFileKey, $allowedFiles, true)) {
-        die('Invalid file requested');
+        die($URLWatcher->getErrorMessage('invalid_domain'));
     }
 
     $absoluteUIPath = realpath($absoluteUIPath);
     if ($absoluteUIPath === false) {
-        die('Invalid file path');
+        die($URLWatcher->getErrorMessage('invalid_filepath'));
     }
 
     if (!is_file($absoluteUIPath) || !is_readable($absoluteUIPath)) {
-        die('Access denied');
+        die($URLWatcher->getErrorMessage('access_denied'));
     }
 
     try {
         require_once $absoluteUIPath;
         fetchLink(...$urlSegments);
     } catch (Throwable $e) {
-        die('An error occurred');
+        die('<span style="font-size:small; color:blue">[Application error] :</span> <i style="color:red; font-size:small">' . htmlspecialchars($URLWatcher->getErrorMessage('generic_error')) . '</i>');
     }
 };
 
