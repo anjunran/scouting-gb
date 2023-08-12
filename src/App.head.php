@@ -1,5 +1,5 @@
 <?php
-    MyPackage::import("modules/ParamGrab.php");
+    MyPackage::import(ROUTE_PARAMS_FETCHER);
     $pagetitle = new ParamGrab;
     $pagetitle = $pagetitle->getUrlParam();
     $pagetitle = $pagetitle === "" ? "HOME" : strtoupper($pagetitle);

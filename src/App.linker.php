@@ -6,5 +6,5 @@ function fetchLink(string $url): void
     if (!empty($url)) {
         $CLEAN_URL = filter_var($url, FILTER_SANITIZE_URL);
     }
-    MyPackage::import(APP_INDEX_HTML);
+    MyPackage::import(APP_INDEX_HTML, $CLEAN_URL);
 }

@@ -11,6 +11,5 @@ $routes = [
     }),
     RouteNodes::route("/scouting", RouteNodes::authenticatedRouter("scouting-admin-app.php", "auth-login.php"))
 ];
-
-$content = useRouter($routes, $CLEAN_URL);
-MyPackage::import(ROUTES_HANDLER);
+$content = useRouter($routes, $props);
+MyPackage::import(ROUTES_HANDLER, $content);
