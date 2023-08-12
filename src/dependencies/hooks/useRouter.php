@@ -1,5 +1,4 @@
 <?php
-MyPackage::import(ROUTE_FILES_INDEXER);
 function useRouter(array $routes, string $page): string
 {
     $routeNodes = new RouteNodes(...$routes);

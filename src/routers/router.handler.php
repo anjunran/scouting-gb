@@ -1,7 +1,4 @@
 <?php
-MyPackage::import(ROUTERS_MANAGER);
-MyPackage::import(AUTHENTICATOR);
-
 $routes = [
     RouteNodes::route("/", function () {
         return "home.php";
